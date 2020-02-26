@@ -13,6 +13,8 @@ class EpisodeManager:
     destination_file="./UnityBuild/smartloader/smartloader_Data/StreamingAssets/InitialScene3.json"
  #   run_simulation_cmd="./UnityBuild/smartloader/smartloader.exe"
     run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 c:/users/gameuser/UnityBuild/smartloader/smartloader.exe"
+    kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 taskkill /IM smartloader.exe"
+
 
     def GenerateNewSerieScenario(self, seed):
         print("start a new serie of scenarios")
@@ -48,8 +50,21 @@ class EpisodeManager:
         opt = "".join(opt)
         print(opt)
 
+    def KillSimulation(self):
+        print("Kill Simulation")
+        p = SSHClient()
+        #p.set_missing_host_key_policy(
+        #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
+        p.load_system_host_keys()
+        p.connect(self.this_host, self.this_port, "gameuser","PlayMe1")
+        stdin, stdout, stderr = p.exec_command(self.kill_simulation_cmd)
+        opt = stdout.readlines()
+        opt = "".join(opt)
+        print(opt)
+
+
 
 if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
-    episode.RunSimulation()
+    episode.KillSimulation()
