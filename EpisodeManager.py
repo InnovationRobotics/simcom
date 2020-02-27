@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys, os
 import logging
+import multiprocessing
 from paramiko import SSHClient
 from scp import SCPClient
 
@@ -14,12 +15,13 @@ class EpisodeManager:
  #   run_simulation_cmd="./UnityBuild/smartloader/smartloader.exe"
     run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 c:/users/gameuser/UnityBuild/smartloader/smartloader.exe"
     kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 taskkill /IM smartloader.exe"
+    simProcess = 0
 
 
-    def GenerateNewSerieScenario(self, seed):
+    def generateNewSerieScenario(self, seed):
         print("start a new serie of scenarios")
 
-    def GenerateNewScenario(self, seed):
+    def generateNewScenario(self, seed):
         print("generate new scenario")
 
     def ssh_scp_files(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
@@ -33,12 +35,12 @@ class EpisodeManager:
 #        with SCPClient(ssh.get_transport()) as scp:
 #            scp.put(source_volume, recursive=True, remote_path=destination_volume)
 
-    def ScpScenarioToSimulation(self):
+    def scpScenarioToSimulation(self):
         print("scp to simulation")
  #       self.ssh_scp_files(self.this_host,"gameuser","PlayMe1", self.this_port, "/home/sload/InitialScene.json", "AAAAA.json")
         self.ssh_scp_files(self.this_host,"gameuser","PlayMe1", self.this_port, self.source_file, self.destination_file)
 
-    def RunSimulation(self):
+    def runSimulation(self):
         print("Run Simulation")
         p = SSHClient()
         #p.set_missing_host_key_policy(
@@ -50,7 +52,7 @@ class EpisodeManager:
         opt = "".join(opt)
         print(opt)
 
-    def KillSimulation(self):
+    def killSimulation(self):
         print("Kill Simulation")
         p = SSHClient()
         #p.set_missing_host_key_policy(
@@ -61,8 +63,17 @@ class EpisodeManager:
         opt = stdout.readlines()
         opt = "".join(opt)
         print(opt)
+        self.simProcess.terminate()
+        self.simProcess.join()
+        self.simProcess = 0
 
-
+    def runEpisode(self):
+        if self.simProcess != 0:
+            print("Simulation is already running... wait few minutes and try again")
+            return
+        self.scpScenarioToSimulation()
+        self.simProcess = multiprocessing.Process(target=self.runSimulation())
+        self.simProcess.start()
 
 if __name__ == '__main__':
     episode = EpisodeManager()
