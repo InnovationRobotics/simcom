@@ -1,66 +1,77 @@
 #!/usr/bin/env python3
 import json
+import random
 from geometry_msgs.msg import PoseStamped
 
-data = {}
-data['objscts'] = []
-NumberOfRocks = 2
-VehiclePosition= new PoseStamped()
-for i in range(NumberOfRocks):
-    #Draw Rock position
+class randomEpisode:
+    actual_seed=0
 
+    data = {}
+    data['objects'] = []
+    NumberOfRocks = 0
+    VehiclePosition= PoseStamped()
 
-data = {}
-data['objects'] = []
-data['objects'].append({
-    'name': 'BobCat',
-    'Id': 'BobCat',
-    'Position':
-        {
-            'x': 277,
-            'y': 0,
-            'z': 130
-        },
-    'Rotation':
-        {
-            'x':0,
-            'y': 0,
-            'z': 0.0,
-            'w': 0
-        },
-    'Scale':
-        {
-            'x': 1,
-            'y': 1,
-            'z': 1
-        }
- })
+    def __init__(self, newseed):
+        if newseed != 0:
+            self.actual_seed = random.seed(None,2)
+        self.NumberOfRocks = random.randint(1,10)
+        self.VehiclePosition.pose.position.x = random.uniform(0,500)
+        self.VehiclePosition.pose.position.y = 0
+        self.VehiclePosition.pose.position.z = random.uniform(0,500)
+        self.VehiclePosition.pose.orientation.x = random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.y = random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.z = random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.w = random.uniform(-1,1)
+        self.data['objects'].append({
+            'name': 'BobCat',
+            'Id': 'BobCat',
+            'Position':
+                {
+                    'x': self.VehiclePosition.pose.position.x,
+                    'y': self.VehiclePosition.pose.position.y,
+                    'z': self.VehiclePosition.pose.position.z
+                },
+            'Orientation':
+                {
+                    'x': self.VehiclePosition.pose.orientation.x,
+                    'y': self.VehiclePosition.pose.orientation.y,
+                    'z': self.VehiclePosition.pose.orientation.z,
+                    'w': self.VehiclePosition.pose.orientation.w
+                },
+            'Scale':
+                {
+                'x': 1,
+                'y': 1,
+                'z': 1
+                 }
+        })
+        for i in range(self.NumberOfRocks):
+            self.data['objects'].append({
+                'name': 'Rock',
+                'Id': i+1,
+                'Position':
+                    {
+                        "x": random.uniform(0,500),
+                        "y": 0,
+                        "z": random.uniform(0,500)
+                    },
+                "Rotation":
+                    {
+                        "x": random.uniform(-1,1),
+                        "y": random.uniform(-1,1),
+                        "z": random.uniform(-1,1),
+                        "w": random.uniform(-1,1)
+                    },
+                "Scale":
+                    {
+                        "x": 0.1,
+                        "y": 0.1,
+                        "z": 0.1
+                    }
+            })
+        with open('/home/sload/InitialScene.json', 'w') as outfile:
+            json.dump(self.data, outfile)
 
-data['objects'].append({
-    'name': 'Rock',
-    'Id': '1',
-    'Position':
-        {
-            "x": 277,
-            "y": 9,
-            "z": 135
-        },
-    "Rotation":
-        {
-            "x": 10,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 5
-        },
-    "Scale":
-        {
-            "x": 0.1,
-            "y": 0.1,
-            "z": 0.1
-        }
-})
-
-
-with open('InitialScene.json', 'w') as outfile:
-    json.dump(data, outfile)
+if __name__ == '__main__':
+    scenario = randomEpisode(1)
 
