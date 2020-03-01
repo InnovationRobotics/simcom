@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+#
+#    This file includes mainly a class "randomEpisode" that:
+#       - draws localization of vehicle
+#       - draws number of rocks
+#       - draws position of each rock
+#       - save in a json file
+#    Author: Michele
+#    Project: SmartLoader - Innovation
+
 import json
 import random
 from geometry_msgs.msg import PoseStamped
