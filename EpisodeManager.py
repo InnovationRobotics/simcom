@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import sys, os
+import sys, os, time
 import logging
-import multiprocessing
+import multiprocessing as mp
+from multiprocessing import Process, Queue
 from paramiko import SSHClient
 from scp import SCPClient
 
@@ -13,8 +14,8 @@ class EpisodeManager:
     source_file="/home/sload/InitialScene.json"
     destination_file="./UnityBuild/smartloader/smartloader_Data/StreamingAssets/InitialScene3.json"
  #   run_simulation_cmd="./UnityBuild/smartloader/smartloader.exe"
-    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 c:/users/gameuser/UnityBuild/smartloader/smartloader.exe"
-    kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 taskkill /IM smartloader.exe"
+    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuild/smartloader/smartloader.exe"
+    kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
     simProcess = 0
 
 
@@ -54,6 +55,7 @@ class EpisodeManager:
 
     def killSimulation(self):
         print("Kill Simulation")
+        time.sleep(5)
         p = SSHClient()
         #p.set_missing_host_key_policy(
         #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
@@ -71,11 +73,26 @@ class EpisodeManager:
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
-        self.scpScenarioToSimulation()
-        self.simProcess = multiprocessing.Process(target=self.runSimulation())
+       # self.scpScenarioToSimulation()
+        self.simProcess = mp.Process(target=self.runSimulation())
         self.simProcess.start()
+
 
 if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
-    episode.KillSimulation()
+    mp.set_start_method('fork')
+    episode.runEpisode()
+#    sometimerproc = mp.Process(target=episode.killSimulation())
+#    print("I am after calling to kill")
+
+#    episode.simProcess = mp.Process(target=episode.runSimulation())
+#    sometimerproc.start()
+    print("I am before start")
+
+#    episode.simProcess.start()
+    print("I am here")
+    time.sleep(5)
+    print("I am here-here")
+    episode.killSimulation()
+    print("I am here-here-here")
