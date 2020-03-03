@@ -167,7 +167,7 @@ if __name__ == '__main__':
 
 #    episode.simProcess.start()
     print("I am here")
-    time.sleep(5)
+    time.sleep(60)
     print("I am here-here")
     episode.killSimulation()
     print("I am here-here-here")

@@ -10,7 +10,10 @@
 
 import json
 import random
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Quaternion, Vector3
+import math
+from math import pi as pi
+import Unity2RealWorld as toRW
 
 class randomEpisode:
     actual_seed=0
@@ -27,10 +30,15 @@ class randomEpisode:
         self.VehiclePosition.pose.position.x = random.uniform(0,500)
         self.VehiclePosition.pose.position.y = 0
         self.VehiclePosition.pose.position.z = random.uniform(0,500)
-        self.VehiclePosition.pose.orientation.x = random.uniform(-1,1)
-        self.VehiclePosition.pose.orientation.y = random.uniform(-1,1)
-        self.VehiclePosition.pose.orientation.z = random.uniform(-1,1)
-        self.VehiclePosition.pose.orientation.w = random.uniform(-1,1)
+        euler_orient = Vector3()
+        euler_orient.x = 0
+        euler_orient.y = random.uniform(-pi,pi)
+        euler_orient.z = random.uniform(-pi,pi)
+        quat_orient = toRW.euler_to_quaternion(euler_orient.x, euler_orient.y, euler_orient.z)
+        self.VehiclePosition.pose.orientation.x = quat_orient[0] #random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.y = quat_orient[1] #random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.z = quat_orient[2] #random.uniform(-1,1)
+        self.VehiclePosition.pose.orientation.w = quat_orient[3] #random.uniform(-1,1)
         self.data['Objects'].append({
             'Name': 'BobCat',
             'Id': 'BobCat',
@@ -56,6 +64,11 @@ class randomEpisode:
         })
         for i in range(self.NumberOfRocks):
             id = (i+1).__str__()
+            eulerRot = Vector3()
+            eulerRot.x = 0
+            eulerRot.y = random.uniform(-pi, pi)
+            eulerRot.z = random.uniform(-pi, pi)
+            quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
             self.data['Objects'].append({
                 'Name': 'Rock',
                 'Id': id,
@@ -67,10 +80,10 @@ class randomEpisode:
                     },
                 "Rotation":
                     {
-                        "x": random.uniform(-1,1),
-                        "y": random.uniform(-1,1),
-                        "z": random.uniform(-1,1),
-                        "w": random.uniform(-1,1)
+                        "x": quatRot[0], #random.uniform(-1,1),
+                        "y": quatRot[1], #random.uniform(-1,1),
+                        "z": quatRot[2], #random.uniform(-1,1),
+                        "w": quatRot[3] #random.uniform(-1,1)
                     },
                 "Scale":
                     {
