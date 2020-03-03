@@ -16,7 +16,7 @@ class randomEpisode:
     actual_seed=0
 
     data = {}
-    data['objects'] = []
+    data['Objects'] = []
     NumberOfRocks = 0
     VehiclePosition= PoseStamped()
 
@@ -31,8 +31,8 @@ class randomEpisode:
         self.VehiclePosition.pose.orientation.y = random.uniform(-1,1)
         self.VehiclePosition.pose.orientation.z = random.uniform(-1,1)
         self.VehiclePosition.pose.orientation.w = random.uniform(-1,1)
-        self.data['objects'].append({
-            'name': 'BobCat',
+        self.data['Objects'].append({
+            'Name': 'BobCat',
             'Id': 'BobCat',
             'Position':
                 {
@@ -40,7 +40,7 @@ class randomEpisode:
                     'y': self.VehiclePosition.pose.position.y,
                     'z': self.VehiclePosition.pose.position.z
                 },
-            'Orientation':
+            'Rotation':
                 {
                     'x': self.VehiclePosition.pose.orientation.x,
                     'y': self.VehiclePosition.pose.orientation.y,
@@ -55,9 +55,10 @@ class randomEpisode:
                  }
         })
         for i in range(self.NumberOfRocks):
-            self.data['objects'].append({
-                'name': 'Rock',
-                'Id': i+1,
+            id = (i+1).__str__()
+            self.data['Objects'].append({
+                'Name': 'Rock',
+                'Id': id,
                 'Position':
                     {
                         "x": random.uniform(0,500),
