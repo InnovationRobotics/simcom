@@ -17,7 +17,6 @@ import Unity2RealWorld as toRW
 
 class randomEpisode:
     actual_seed=0
-
     data = {}
     data['Objects'] = []
     NumberOfRocks = 0
@@ -33,7 +32,7 @@ class randomEpisode:
         euler_orient = Vector3()
         euler_orient.x = 0
         euler_orient.y = random.uniform(-pi,pi)
-        euler_orient.z = random.uniform(-pi,pi)
+        euler_orient.z = 0 #random.uniform(-pi,pi)
         quat_orient = toRW.euler_to_quaternion(euler_orient.x, euler_orient.y, euler_orient.z)
         self.VehiclePosition.pose.orientation.x = quat_orient[0] #random.uniform(-1,1)
         self.VehiclePosition.pose.orientation.y = quat_orient[1] #random.uniform(-1,1)
@@ -62,6 +61,13 @@ class randomEpisode:
                 'z': 1
                  }
         })
+
+        BobcatX = self.VehiclePosition.pose.position.x
+        BobcatZ = self.VehiclePosition.pose.position.z
+        XMin = BobcatX - 1
+        XMax = BobcatX + 1
+        ZMin = BobcatZ - 1.5
+        ZMax = BobcatZ + 1.5
         for i in range(self.NumberOfRocks):
             id = (i+1).__str__()
             eulerRot = Vector3()
@@ -74,9 +80,9 @@ class randomEpisode:
                 'Id': id,
                 'Position':
                     {
-                        "x": random.uniform(0,500),
+                        "x": random.uniform(XMin,XMax),
                         "y": 0,
-                        "z": random.uniform(0,500)
+                        "z": random.uniform(ZMin,ZMax)
                     },
                 "Rotation":
                     {
