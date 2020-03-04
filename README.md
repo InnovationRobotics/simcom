@@ -16,3 +16,6 @@ There are:
 1. Install ROS Melodic
 2. pip3 install paramiko scp
 3. Install pycharm with a launch script
+4. pip install -U sphinx 
+
+For documentation: cd docs and make html

@@ -25,7 +25,7 @@ class randomEpisode:
     def __init__(self, newseed):
         if newseed != 0:
             self.actual_seed = random.seed(None,2)
-        self.NumberOfRocks = random.randint(1,10)
+        self.NumberOfRocks = 2 #random.randint(1,10)
         self.VehiclePosition.pose.position.x = random.uniform(0,500)
         self.VehiclePosition.pose.position.y = 0
         self.VehiclePosition.pose.position.z = random.uniform(0,500)
@@ -73,7 +73,7 @@ class randomEpisode:
             eulerRot = Vector3()
             eulerRot.x = 0
             eulerRot.y = random.uniform(-pi, pi)
-            eulerRot.z = random.uniform(-pi, pi)
+            eulerRot.z = 0 #random.uniform(-pi, pi)
             quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
             self.data['Objects'].append({
                 'Name': 'Rock',
