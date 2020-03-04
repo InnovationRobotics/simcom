@@ -16,6 +16,7 @@
 #     kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 
 import sys, os, time
+from shutil import copyfile
 import logging
 import multiprocessing as mp
 from multiprocessing import Process, Queue
@@ -72,9 +73,13 @@ class EpisodeManager:
         randomEpisode(new_seed)
 
 
-    def generateNewScenario(self):
+    def generateNewScenario(self,typeOfRand):
         print("generate new scenario")
-        randomEpisode(0)
+        if typeOfRand == "verybasic":
+            print(os.getcwd())
+            copyfile("/home/sload/GIT/simcom/VeryBasicInitialScene.json","/home/sload/InitialScene.json")
+        else:
+            randomEpisode(typeOfRand, 0)
 
 # This method secure copies a file  to a remote computer
     def ssh_scp_files(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
@@ -133,11 +138,11 @@ class EpisodeManager:
         self.simProcess = mp.Process(target=self.runSimulation())
         self.simProcess.start()
 
-    def generateAndRunWholeEpisode(self):
+    def generateAndRunWholeEpisode(self, typeOfRand):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
-        self.generateNewScenario()
+        self.generateNewScenario(typeOfRand)
         self.scpScenarioToSimulation()
         self.simProcess = mp.Process(target=self.runSimulation())
         self.simProcess.start()
@@ -157,7 +162,7 @@ if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
     mp.set_start_method('fork')
-    episode.generateAndRunWholeEpisode()
+    episode.generateAndRunWholeEpisode("verybasic")
 #    sometimerproc = mp.Process(target=episode.killSimulation())
 #    print("I am after calling to kill")
 

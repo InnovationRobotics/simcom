@@ -22,10 +22,13 @@ class randomEpisode:
     NumberOfRocks = 0
     VehiclePosition= PoseStamped()
 
-    def __init__(self, newseed):
+    def __init__(self, typeOfRand, newseed):
         if newseed != 0:
             self.actual_seed = random.seed(None,2)
-        self.NumberOfRocks = 2 #random.randint(1,10)
+        if (typeOfRand == "simple"):
+            self.NumberOfRocks = 1 #random.randint(1,10)
+        else:
+            self.NumberOfRocks = random.randint(1,10)
         self.VehiclePosition.pose.position.x = random.uniform(0,500)
         self.VehiclePosition.pose.position.y = 0
         self.VehiclePosition.pose.position.z = random.uniform(0,500)
