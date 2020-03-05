@@ -76,8 +76,9 @@ class EpisodeManager:
     def generateNewScenario(self,typeOfRand):
         print("generate new scenario")
         if typeOfRand == "verybasic":
-            print(os.getcwd())
-            copyfile("/home/sload/GIT/simcom/VeryBasicInitialScene.json","/home/sload/InitialScene.json")
+            path = os.getcwd()
+            file = path +"/VeryBasicInitialScene.json"
+            copyfile(file,"/home/sload/InitialScene.json")
         else:
             randomEpisode(typeOfRand, 0)
 
