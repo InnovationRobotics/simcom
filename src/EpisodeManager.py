@@ -20,7 +20,7 @@ from shutil import copyfile
 import logging
 import multiprocessing as mp
 from multiprocessing import Process, Queue
-from paramiko import SSHClient
+from paramiko import SSHClient, AuthenticationException, SSHException, BadHostKeyException
 from scp import SCPClient
 import socket
 import json
@@ -85,13 +85,22 @@ class EpisodeManager:
 # This method secure copies a file  to a remote computer
     def ssh_scp_files(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
         logging.info("In ssh_scp_files()method, to copy the files to the server")
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.connect(ssh_host, ssh_port, ssh_user, ssh_password)
-       # ssh.connect(ssh_host, ssh_user, ssh_password, look_for_keys=False)
-        scp = SCPClient(ssh.get_transport())
-        scp.put(source_volume, destination_volume)
-# If one day we will need to copy  directories
+        try:
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.connect(ssh_host, ssh_port, ssh_user, ssh_password)
+            # ssh.connect(ssh_host, ssh_user, ssh_password, look_for_keys=False)
+            scp = SCPClient(ssh.get_transport())
+            scp.put(source_volume, destination_volume)
+        except AuthenticationException:
+            print("Authentication failed, please verify your credentials: %s")
+        except SSHException as sshException:
+            print("Unable to establish SSH connection: %s" % sshException)
+        except BadHostKeyException as badHostKeyException:
+            print("Unable to verify server's host key: %s" % badHostKeyException)
+        finally:
+            ssh.close()
+        # If one day we will need to copy  directories
 #        with SCPClient(ssh.get_transport()) as scp:
 #            scp.put(source_volume, recursive=True, remote_path=destination_volume)
 
