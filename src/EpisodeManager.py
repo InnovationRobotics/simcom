@@ -83,23 +83,30 @@ class EpisodeManager:
             randomEpisode(typeOfRand, 0)
 
 # This method secure copies a file  to a remote computer
+    def ssh_scp_file(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
+        logging.info("In ssh_scp_files()method, to copy the files to the server")
+        command = "sshpass -p PlayMe1 scp "+ source_volume+" gameuser@192.168.100.21:"+destination_volume
+        print(command)
+        os.system(command)
+
     def ssh_scp_files(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
         logging.info("In ssh_scp_files()method, to copy the files to the server")
         try:
             ssh = SSHClient()
             ssh.load_system_host_keys()
-            ssh.connect(ssh_host, ssh_port, ssh_user, ssh_password)
+            ssh.connect(ssh_host, ssh_port, ssh_user, ssh_password, banner_timeout = 400)
             # ssh.connect(ssh_host, ssh_user, ssh_password, look_for_keys=False)
             scp = SCPClient(ssh.get_transport())
             scp.put(source_volume, destination_volume)
         except AuthenticationException:
             print("Authentication failed, please verify your credentials: %s")
         except SSHException as sshException:
-            print("Unable to establish SSH connection: %s" % sshException)
+            print("SCP: Unable to establish SSH connection: %s" % sshException)
+            raise
         except BadHostKeyException as badHostKeyException:
             print("Unable to verify server's host key: %s" % badHostKeyException)
-        finally:
-            ssh.close()
+#        finally:
+#            ssh.close()
         # If one day we will need to copy  directories
 #        with SCPClient(ssh.get_transport()) as scp:
 #            scp.put(source_volume, recursive=True, remote_path=destination_volume)
@@ -108,54 +115,98 @@ class EpisodeManager:
     def scpScenarioToSimulation(self):
         print("scp to simulation")
  #       self.ssh_scp_files(self.this_host,"gameuser","PlayMe1", self.this_port, "/home/sload/InitialScene.json", "AAAAA.json")
-        self.ssh_scp_files(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.scenario_file, self.destination_scenario)
-        self.ssh_scp_files(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.oururl_file, self.destination_url)
-
+        self.ssh_scp_file(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.scenario_file, self.destination_scenario)
+        self.ssh_scp_file(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.oururl_file, self.destination_url)
 
     def runSimulation(self):
+        print("Run Simulation Brutal Force")
+        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.run_simulation_cmd
+        print(command)
+        os.system(command)
+
+    def runSimulation_paramiko(self):
         print("Run Simulation")
-        p = SSHClient()
-        #p.set_missing_host_key_policy(
-        #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
-        p.load_system_host_keys()
-        p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1")
-        stdin, stdout, stderr = p.exec_command(self.run_simulation_cmd)
-        opt = stdout.readlines()
-        opt = "".join(opt)
-        print(opt)
+        try:
+            p = SSHClient()
+            #p.set_missing_host_key_policy(
+            #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
+            p.load_system_host_keys()
+            p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1", banner_timeout=400)
+            stdin, stdout, stderr = p.exec_command(self.run_simulation_cmd)
+            opt = stdout.readlines()
+            opt = "".join(opt)
+            print(opt)
+        except AuthenticationException:
+            print("Authentication failed, please verify your credentials: %s")
+        except SSHException as sshException:
+            print("SSH: Unable to establish SSH connection: %s" % sshException)
+            raise
+        except BadHostKeyException as badHostKeyException:
+            print("Unable to verify server's host key: %s" % badHostKeyException)
+        #finally:
+        #    p.close()
 
     def killSimulation(self):
-        print("Kill Simulation")
+        print("Kill Simulation Brutal Force")
+        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.kill_simulation_cmd
+        print(command)
+        os.system(command)
 
-        p = SSHClient()
-        #p.set_missing_host_key_policy(
-        #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
-        p.load_system_host_keys()
-        p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1")
-        stdin, stdout, stderr = p.exec_command(self.kill_simulation_cmd)
-        opt = stdout.readlines()
-        opt = "".join(opt)
-        print(opt)
-        self.simProcess.terminate()
-        self.simProcess.join()
-        self.simProcess = 0
+    def killSimulation_paramiko(self):
+        print("Kill Simulation")
+        try:
+            p = SSHClient()
+            #p.set_missing_host_key_policy(
+            #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
+            p.load_system_host_keys()
+            p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1", banner_timeout=400)
+            stdin, stdout, stderr = p.exec_command(self.kill_simulation_cmd)
+            opt = stdout.readlines()
+            opt = "".join(opt)
+            print(opt)
+        except AuthenticationException:
+            print("Authentication failed, please verify your credentials: %s")
+        except SSHException as sshException:
+            print("Kill: Unable to establish SSH connection: %s" % sshException)
+        except BadHostKeyException as badHostKeyException:
+            print("Unable to verify server's host key: %s" % badHostKeyException)
+        finally:
+#            self.simProcess.terminate()
+#            self.simProcess.join()
+            self.simProcess = 0
 
     def runEpisode(self):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
        # self.scpScenarioToSimulation()
-        self.simProcess = mp.Process(target=self.runSimulation())
-        self.simProcess.start()
+        try:
+            self.simProcess = mp.Process(target=self.runSimulation())
+            self.simProcess.start()
+        except:
+            time.sleep(1)
+         #   self.generateAndRunWholeEpisode("verybasic")
+
 
     def generateAndRunWholeEpisode(self, typeOfRand):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
         self.generateNewScenario(typeOfRand)
-        self.scpScenarioToSimulation()
-        self.simProcess = mp.Process(target=self.runSimulation())
-        self.simProcess.start()
+        try:
+            self.scpScenarioToSimulation()
+        except:
+            time.sleep(1)
+            print("Stopped this scenario: try runEpisode")
+            raise #("Banner")
+        else:
+            try:
+                self.simProcess = mp.Process(target=self.runSimulation())
+                self.simProcess.start()
+            except:
+                time.sleep(1)
+                print("Stopped this scenario here")
+                raise #("Banner")
 
     def __init__(self):
         # Get the IP address of this machine and throw it in the URLConfig.json file
