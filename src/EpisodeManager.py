@@ -85,7 +85,9 @@ class EpisodeManager:
 # This method secure copies a file  to a remote computer
     def ssh_scp_file(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
         logging.info("In ssh_scp_files()method, to copy the files to the server")
-        command = "sshpass -p PlayMe1 scp "+ source_volume+" gameuser@192.168.100.21:"+destination_volume
+        command = "sshpass -p " + ssh_password + " scp "+ source_volume+" " + ssh_user +"@"+ssh_host+":"+destination_volume
+ #       command = "sshpass -p PlayMe1 scp "+ source_volume+" gameuser@192.168.100.21:"+destination_volume
+
         print(command)
         os.system(command)
 
@@ -120,7 +122,8 @@ class EpisodeManager:
 
     def runSimulation(self):
         print("Run Simulation Brutal Force")
-        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.run_simulation_cmd
+        command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.run_simulation_cmd
+#        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.run_simulation_cmd
         print(command)
         os.system(command)
 
@@ -148,7 +151,8 @@ class EpisodeManager:
 
     def killSimulation(self):
         print("Kill Simulation Brutal Force")
-        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.kill_simulation_cmd
+        command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.kill_simulation_cmd
+ #       command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.kill_simulation_cmd
         print(command)
         os.system(command)
 
