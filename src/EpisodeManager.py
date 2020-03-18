@@ -16,6 +16,8 @@
 #     kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 
 import sys, os, time
+import os.path
+import re
 from shutil import copyfile
 import logging
 import multiprocessing as mp
@@ -51,6 +53,7 @@ def get_ip():
 #
 #
 class EpisodeManager:
+    local = False
     scenario = {}
     scenarioConfigFile = open("InitialScene.json", 'wt')
     sim_host="192.168.100.21"
@@ -78,40 +81,22 @@ class EpisodeManager:
         if typeOfRand == "verybasic":
             path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
-            copyfile(file,"/home/sload/InitialScene.json")
+            copyfile(file,"InitialScene.json")
         else:
             randomEpisode(typeOfRand, 0)
 
 # This method secure copies a file  to a remote computer
     def ssh_scp_file(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
         logging.info("In ssh_scp_files()method, to copy the files to the server")
-        command = "sshpass -p " + ssh_password + " scp "+ source_volume+" " + ssh_user +"@"+ssh_host+":"+destination_volume
- #       command = "sshpass -p PlayMe1 scp "+ source_volume+" gameuser@192.168.100.21:"+destination_volume
+        if (self.local):
+            command = "cp " + source_volume + " " + destination_volume
+        else:
+            command = "sshpass -p " + ssh_password + " scp "+ source_volume+" " + ssh_user +"@"+ssh_host+":"+destination_volume
 
         print(command)
         os.system(command)
 
-    def ssh_scp_files(self, ssh_host, ssh_user, ssh_password, ssh_port, source_volume, destination_volume):
-        logging.info("In ssh_scp_files()method, to copy the files to the server")
-        try:
-            ssh = SSHClient()
-            ssh.load_system_host_keys()
-            ssh.connect(ssh_host, ssh_port, ssh_user, ssh_password, banner_timeout = 400)
-            # ssh.connect(ssh_host, ssh_user, ssh_password, look_for_keys=False)
-            scp = SCPClient(ssh.get_transport())
-            scp.put(source_volume, destination_volume)
-        except AuthenticationException:
-            print("Authentication failed, please verify your credentials: %s")
-        except SSHException as sshException:
-            print("SCP: Unable to establish SSH connection: %s" % sshException)
-            raise
-        except BadHostKeyException as badHostKeyException:
-            print("Unable to verify server's host key: %s" % badHostKeyException)
-#        finally:
-#            ssh.close()
-        # If one day we will need to copy  directories
-#        with SCPClient(ssh.get_transport()) as scp:
-#            scp.put(source_volume, recursive=True, remote_path=destination_volume)
+
 
 # This method encapsulates ssh_scp_files and copies all the files needed via secure cp to the computer that runs Unity
     def scpScenarioToSimulation(self):
@@ -122,62 +107,24 @@ class EpisodeManager:
 
     def runSimulation(self):
         print("Run Simulation Brutal Force")
-        command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.run_simulation_cmd
-#        command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.run_simulation_cmd
+        if (self.local):
+            command = self.run_simulation_cmd
+        else:
+            command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.run_simulation_cmd
+            #command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.run_simulation_cmd
         print(command)
         os.system(command)
 
-    def runSimulation_paramiko(self):
-        print("Run Simulation")
-        try:
-            p = SSHClient()
-            #p.set_missing_host_key_policy(
-            #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
-            p.load_system_host_keys()
-            p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1", banner_timeout=400)
-            stdin, stdout, stderr = p.exec_command(self.run_simulation_cmd)
-            opt = stdout.readlines()
-            opt = "".join(opt)
-            print(opt)
-        except AuthenticationException:
-            print("Authentication failed, please verify your credentials: %s")
-        except SSHException as sshException:
-            print("SSH: Unable to establish SSH connection: %s" % sshException)
-            raise
-        except BadHostKeyException as badHostKeyException:
-            print("Unable to verify server's host key: %s" % badHostKeyException)
-        #finally:
-        #    p.close()
 
     def killSimulation(self):
         print("Kill Simulation Brutal Force")
-        command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.kill_simulation_cmd
+        if (self.local):
+            command = self.kill_simulation_cmd
+        else:
+            command = "sshpass -p PlayMe1 ssh "+self.sim_host+" -l gameuser "+ self.kill_simulation_cmd
  #       command = "sshpass -p PlayMe1 ssh 192.168.100.21 -l gameuser "+ self.kill_simulation_cmd
         print(command)
         os.system(command)
-
-    def killSimulation_paramiko(self):
-        print("Kill Simulation")
-        try:
-            p = SSHClient()
-            #p.set_missing_host_key_policy(
-            #    paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
-            p.load_system_host_keys()
-            p.connect(self.sim_host, self.sim_port, "gameuser","PlayMe1", banner_timeout=400)
-            stdin, stdout, stderr = p.exec_command(self.kill_simulation_cmd)
-            opt = stdout.readlines()
-            opt = "".join(opt)
-            print(opt)
-        except AuthenticationException:
-            print("Authentication failed, please verify your credentials: %s")
-        except SSHException as sshException:
-            print("Kill: Unable to establish SSH connection: %s" % sshException)
-        except BadHostKeyException as badHostKeyException:
-            print("Unable to verify server's host key: %s" % badHostKeyException)
-        finally:
-#            self.simProcess.terminate()
-#            self.simProcess.join()
-            self.simProcess = 0
 
     def runEpisode(self):
         if self.simProcess != 0:
@@ -213,15 +160,58 @@ class EpisodeManager:
                 raise #("Banner")
 
     def __init__(self):
+        # Where are we
+        mydic = sys.path
+        mypath = ""
+        for i in mydic:
+            if (i.find("simcom")!=-1):
+                mypath = i
+                break
+        if mypath != "":
+            tlocal = mypath
+        else:
+            tlocal = os.getcwd()
+
+        print(tlocal)
+        local = re.sub('/src$', '', tlocal)
+        configDir = local +"//config"
+        os.chdir(configDir)
+        local = os.getcwd()
+        confFile = configDir+"//config.json"
+
+        if (os.path.exists(confFile)):
+             with open(confFile) as json_file:
+                data = json.load(json_file)
+
+                self.sim_host = data['sim_host']
+                if (self.sim_host == "127.0.0.1"):
+                    self.local = True
+                else:
+                    self.local = False
+                self.sim_port = data['sim_port']
+                self.scenario_file = configDir+"//"+data['scenario_file']
+                self.oururl_file = configDir+"//"+data['oururl_file']
+                self.sim_root = os.getenv('HOME') + '//' + data['sim_root']
+                if self.local == True:
+                    self.destination_scenario = self.sim_root + "//" + data['destination_scenario']
+                    self.destination_url = self.sim_root + "//" +data['destination_url']
+                    self.run_simulation_cmd = self.sim_root + "//" + data['run_simulation_cmd']
+                else:
+                    self.destination_scenario = data['destination_scenario']
+                    self.destination_url = data['destination_url']
+                    self.run_simulation_cmd=data['run_simulation_cmd']
+                self.kill_simulation_cmd = data['kill_simulation_cmd']
+        #else: works with default
+            #
         # Get the IP address of this machine and throw it in the URLConfig.json file
         self.myip = get_ip()
         self.myurl = "ws://"+self.myip.__str__()+":9090"
         print(self.myurl)
-        data = {}
-        data['URL'] = self.myurl
+        data2 = {}
+        data2['URL'] = self.myurl
         #data['URL'].append(self.myurl)
         with open(self.oururl_file, 'w') as outfile:
-            json.dump(data, outfile)
+            json.dump(data2, outfile)
 
 if __name__ == '__main__':
     episode = EpisodeManager()
