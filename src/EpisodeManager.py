@@ -27,6 +27,7 @@ from scp import SCPClient
 import socket
 import json
 from src.DrawingEpisodes import randomEpisode
+from src.DrawingEpisodes import recorderEpisode
 
 ### The goal of this function is to determine the IP address of the computer running this module.
 ### Knowing the IP address will allow to configure the URLConfig.json for the simulation without human intervention
@@ -82,6 +83,8 @@ class EpisodeManager:
             path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
             copyfile(file,"InitialScene.json")
+        elif typeOfRand == "recorder":
+            recorderEpisode(0)
         else:
             randomEpisode(typeOfRand, 0)
 
@@ -217,7 +220,7 @@ if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
     mp.set_start_method('fork')
-    episode.generateAndRunWholeEpisode("verybasic")
+    episode.generateAndRunWholeEpisode("recorder")
 #    sometimerproc = mp.Process(target=episode.killSimulation())
 #    print("I am after calling to kill")
 
