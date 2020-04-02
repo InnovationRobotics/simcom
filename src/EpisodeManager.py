@@ -27,7 +27,7 @@ from scp import SCPClient
 import socket
 import json
 from src.DrawingEpisodes import randomEpisode
-from src.DrawingEpisodes import recorderEpisode
+from src.DrawingEpisodes import recorderEpisode, recorderEpisode_mr
 
 ### The goal of this function is to determine the IP address of the computer running this module.
 ### Knowing the IP address will allow to configure the URLConfig.json for the simulation without human intervention
@@ -85,6 +85,9 @@ class EpisodeManager:
             copyfile(file,"InitialScene.json")
         elif typeOfRand == "recorder":
             recorderEpisode(0)
+
+        elif typeOfRand == "recorder_mr":
+            recorderEpisode_mr(0)
         else:
             randomEpisode(typeOfRand, 0)
 
