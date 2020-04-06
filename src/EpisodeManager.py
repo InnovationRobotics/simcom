@@ -26,8 +26,7 @@ from paramiko import SSHClient, AuthenticationException, SSHException, BadHostKe
 from scp import SCPClient
 import socket
 import json
-from src.DrawingEpisodes import randomEpisode
-from src.DrawingEpisodes import recorderEpisode, recorderEpisode_mr
+from src.DrawingEpisodes import randomEpisode, MultipleRocksEpisode
 
 ### The goal of this function is to determine the IP address of the computer running this module.
 ### Knowing the IP address will allow to configure the URLConfig.json for the simulation without human intervention
@@ -77,17 +76,14 @@ class EpisodeManager:
         randomEpisode(new_seed)
 
 
-    def generateNewScenario(self,typeOfRand):
+    def generateNewScenario(self,typeOfRand, numstones):
         print("generate new scenario")
         if typeOfRand == "verybasic":
             path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
             copyfile(file,"InitialScene.json")
-        elif typeOfRand == "recorder":
-            recorderEpisode(0)
-
-        elif typeOfRand == "recorder_mr":
-            recorderEpisode_mr(0)
+        elif typeOfRand == "MultipleRocks":
+            MultipleRocksEpisode(0, numstones)
         else:
             randomEpisode(typeOfRand, 0)
 
@@ -145,11 +141,11 @@ class EpisodeManager:
          #   self.generateAndRunWholeEpisode("verybasic")
 
 
-    def generateAndRunWholeEpisode(self, typeOfRand):
+    def generateAndRunWholeEpisode(self, typeOfRand, numstones):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
-        self.generateNewScenario(typeOfRand)
+        self.generateNewScenario(typeOfRand, numstones)
         try:
             self.scpScenarioToSimulation()
         except:
