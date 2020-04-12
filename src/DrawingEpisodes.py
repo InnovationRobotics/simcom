@@ -119,9 +119,9 @@ class randomEpisode:
                     },
                 "Scale":
                     {
-                        "x": 0.1,
-                        "y": 0.1,
-                        "z": 0.1
+                        "x": 0.01,
+                        "y": 0.01,
+                        "z": 0.01
                     }
             })
  #       deleteFileIfExists('/home/sload/ws/interfaces/src/simcom/config/InitialScene.json')
@@ -136,7 +136,7 @@ class MultipleRocksEpisode:
     # NumberOfRocks = 0
     # VehiclePosition= PoseStamped()
 
-    def __init__(self, newseed, NumberOfRocks):
+    def __init__(self, newseed, NumberOfRocks, merker):
         actual_seed = 0
         data = {}
         data['Objects'] = []
@@ -206,42 +206,44 @@ class MultipleRocksEpisode:
                     },
                 "Scale":
                     {
+                        "x": 0.25,
+                        "y": 0.25,
+                        "z": 0.25
+                    }
+            })
+
+        if merker:
+            id = (NumberOfRocks+1).__str__()
+            eulerRot = Vector3()
+            eulerRot.x = 0
+            eulerRot.y = random.uniform(-pi, pi)
+            eulerRot.z = 0 #random.uniform(-pi, pi)
+            quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
+            data['Objects'].append({
+                'Name': 'Rock',
+                'Id': id,
+                'Position':
+                    {
+                        # "x": 250 + random.uniform(XMin,XMax),
+                        # "x": 258 + random.uniform(-1, 8),
+                        "x": 250 + random.uniform(6, 12),
+                        "y": 0,
+                        "z": 250
+                    },
+                "Rotation":
+                    {
+                        "x": quatRot[0], #random.uniform(-1,1),
+                        "y": quatRot[1], #random.uniform(-1,1),
+                        "z": quatRot[2], #random.uniform(-1,1),
+                        "w": quatRot[3] #random.uniform(-1,1)
+                    },
+                "Scale":
+                    {
                         "x": 0.1,
                         "y": 0.1,
                         "z": 0.1
                     }
             })
-
-        id = (NumberOfRocks+1).__str__()
-        eulerRot = Vector3()
-        eulerRot.x = 0
-        eulerRot.y = random.uniform(-pi, pi)
-        eulerRot.z = 0 #random.uniform(-pi, pi)
-        quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
-        data['Objects'].append({
-            'Name': 'Rock',
-            'Id': id,
-            'Position':
-                {
-                    # "x": 250 + random.uniform(XMin,XMax),
-                    "x": 258 + random.uniform(-1, 8),
-                    "y": 0,
-                    "z": 250
-                },
-            "Rotation":
-                {
-                    "x": quatRot[0], #random.uniform(-1,1),
-                    "y": quatRot[1], #random.uniform(-1,1),
-                    "z": quatRot[2], #random.uniform(-1,1),
-                    "w": quatRot[3] #random.uniform(-1,1)
-                },
-            "Scale":
-                {
-                    "x": 0.1,
-                    "y": 0.1,
-                    "z": 0.1
-                }
-        })
 
         filepath = determinePathToConfig()+"/InitialScene.json"
         with open(filepath,'w') as outfile:

@@ -76,14 +76,14 @@ class EpisodeManager:
         randomEpisode(new_seed)
 
 
-    def generateNewScenario(self,typeOfRand, numstones):
+    def generateNewScenario(self,typeOfRand, numstones, marker):
         print("generate new scenario")
         if typeOfRand == "verybasic":
             path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
             copyfile(file,"InitialScene.json")
         elif typeOfRand == "MultipleRocks":
-            MultipleRocksEpisode(0, numstones)
+            MultipleRocksEpisode(0, numstones, marker)
         else:
             randomEpisode(typeOfRand, 0)
 
@@ -141,11 +141,11 @@ class EpisodeManager:
          #   self.generateAndRunWholeEpisode("verybasic")
 
 
-    def generateAndRunWholeEpisode(self, typeOfRand, numstones):
+    def generateAndRunWholeEpisode(self, typeOfRand, numstones, marker):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
-        self.generateNewScenario(typeOfRand, numstones)
+        self.generateNewScenario(typeOfRand, numstones, marker)
         try:
             self.scpScenarioToSimulation()
         except:
