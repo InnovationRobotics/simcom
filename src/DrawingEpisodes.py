@@ -136,7 +136,7 @@ class MultipleRocksEpisode:
     # NumberOfRocks = 0
     # VehiclePosition= PoseStamped()
 
-    def __init__(self, newseed, NumberOfRocks, merker):
+    def __init__(self, newseed, NumberOfRocks, marker):
         actual_seed = 0
         data = {}
         data['Objects'] = []
@@ -212,7 +212,7 @@ class MultipleRocksEpisode:
                     }
             })
 
-        if merker:
+        if marker:
             id = (NumberOfRocks+1).__str__()
             eulerRot = Vector3()
             eulerRot.x = 0
