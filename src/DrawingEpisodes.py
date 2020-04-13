@@ -119,9 +119,9 @@ class randomEpisode:
                     },
                 "Scale":
                     {
-                        "x": 0.1,
-                        "y": 0.1,
-                        "z": 0.1
+                        "x": 0.01,
+                        "y": 0.01,
+                        "z": 0.01
                     }
             })
  #       deleteFileIfExists('/home/sload/ws/interfaces/src/simcom/config/InitialScene.json')
@@ -129,30 +129,28 @@ class randomEpisode:
         with open(filepath, 'w') as outfile:
             json.dump(data, outfile)
 
-class recorderEpisode:
+class MultipleRocksEpisode:
     # actual_seed=0
     # data = {}
     # data['Objects'] = []
     # NumberOfRocks = 0
     # VehiclePosition= PoseStamped()
 
-    def __init__(self, newseed):
+    def __init__(self, newseed, NumberOfRocks, marker):
         actual_seed = 0
         data = {}
         data['Objects'] = []
-        NumberOfRocks = 0
+
         VehiclePosition = PoseStamped()
         if newseed != 0:
             actual_seed = random.seed(None,2)
-
-        NumberOfRocks = 2
 
         VehiclePosition.pose.position.x = 250
         VehiclePosition.pose.position.y = 0
         VehiclePosition.pose.position.z = 250
         euler_orient = Vector3()
         euler_orient.x = 0
-        euler_orient.y = random.uniform(-pi,pi)
+        euler_orient.y = pi/2 #random.uniform(-pi,pi)
         euler_orient.z = 0 #random.uniform(-pi,pi)
         quat_orient = toRW.euler_to_quaternion(euler_orient.x, euler_orient.y, euler_orient.z)
         VehiclePosition.pose.orientation.x = quat_orient[0] #random.uniform(-1,1)
@@ -183,72 +181,70 @@ class recorderEpisode:
                  }
         })
 
-        BobcatX = VehiclePosition.pose.position.x
-        BobcatZ = VehiclePosition.pose.position.z
-        XMin = BobcatX - 5
-        XMax = BobcatX + 5
-        ZMin = BobcatZ - 5
-        ZMax = BobcatZ + 5
+        for i in range(NumberOfRocks):
+            id = (i+1).__str__()
+            eulerRot = Vector3()
+            eulerRot.x = 0
+            eulerRot.y = random.uniform(-pi, pi)
+            eulerRot.z = 0 #random.uniform(-pi, pi)
+            quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
+            data['Objects'].append({
+                'Name': 'Rock',
+                'Id': id,
+                'Position':
+                    {
+                        "x": 253,
+                        "y": 0,
+                        "z": 250 + random.uniform(-0.5,0.5)
+                    },
+                "Rotation":
+                    {
+                        "x": quatRot[0], #random.uniform(-1,1),
+                        "y": quatRot[1], #random.uniform(-1,1),
+                        "z": quatRot[2], #random.uniform(-1,1),
+                        "w": quatRot[3] #random.uniform(-1,1)
+                    },
+                "Scale":
+                    {
+                        "x": 0.25,
+                        "y": 0.25,
+                        "z": 0.25
+                    }
+            })
 
-        id = (1).__str__()
-        eulerRot = Vector3()
-        eulerRot.x = 0
-        eulerRot.y = random.uniform(-pi, pi)
-        eulerRot.z = 0 #random.uniform(-pi, pi)
-        quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
-        data['Objects'].append({
-            'Name': 'Rock',
-            'Id': id,
-            'Position':
-                {
-                    "x": random.uniform(XMin,XMax),
-                    "y": 0,
-                    "z": random.uniform(ZMin,ZMax)
-                },
-            "Rotation":
-                {
-                    "x": quatRot[0], #random.uniform(-1,1),
-                    "y": quatRot[1], #random.uniform(-1,1),
-                    "z": quatRot[2], #random.uniform(-1,1),
-                    "w": quatRot[3] #random.uniform(-1,1)
-                },
-            "Scale":
-                {
-                    "x": 0.3,
-                    "y": 0.3,
-                    "z": 0.3
-                }
-        })
+        if marker:
+            id = (NumberOfRocks+1).__str__()
+            eulerRot = Vector3()
+            eulerRot.x = 0
+            eulerRot.y = random.uniform(-pi, pi)
+            eulerRot.z = 0 #random.uniform(-pi, pi)
+            quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
+            data['Objects'].append({
+                'Name': 'Rock',
+                'Id': id,
+                'Position':
+                    {
+                        # "x": 250 + random.uniform(XMin,XMax),
+                        # "x": 258 + random.uniform(-1, 8),
+                        "x": 250 + random.uniform(6, 12),
+                        "y": 0,
+                        "z": 250
+                    },
+                "Rotation":
+                    {
+                        "x": quatRot[0], #random.uniform(-1,1),
+                        "y": quatRot[1], #random.uniform(-1,1),
+                        "z": quatRot[2], #random.uniform(-1,1),
+                        "w": quatRot[3] #random.uniform(-1,1)
+                    },
+                "Scale":
+                    {
+                        "x": 0.1,
+                        "y": 0.1,
+                        "z": 0.1
+                    }
+            })
 
-        id = (2).__str__()
-        eulerRot = Vector3()
-        eulerRot.x = 0
-        eulerRot.y = random.uniform(-pi, pi)
-        eulerRot.z = 0 #random.uniform(-pi, pi)
-        quatRot = toRW.euler_to_quaternion(eulerRot.x, eulerRot.y, eulerRot.z)
-        data['Objects'].append({
-            'Name': 'Rock',
-            'Id': id,
-            'Position':
-                {
-                    "x": random.uniform(XMin,XMax),
-                    "y": 0,
-                    "z": random.uniform(ZMin,ZMax)
-                },
-            "Rotation":
-                {
-                    "x": quatRot[0], #random.uniform(-1,1),
-                    "y": quatRot[1], #random.uniform(-1,1),
-                    "z": quatRot[2], #random.uniform(-1,1),
-                    "w": quatRot[3] #random.uniform(-1,1)
-                },
-            "Scale":
-                {
-                    "x": 0.1,
-                    "y": 0.1,
-                    "z": 0.1
-                }
-        })
         filepath = determinePathToConfig()+"/InitialScene.json"
         with open(filepath,'w') as outfile:
             json.dump(data, outfile)
@@ -256,6 +252,5 @@ class recorderEpisode:
 if __name__ == '__main__':
     for j in range(3):
         scenario = recorderEpisode(j)
-        #scenario = randomEpisode("coucou",j)
 
 
