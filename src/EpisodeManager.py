@@ -28,6 +28,7 @@ import socket
 import json
 from src.DrawingEpisodes import randomEpisode
 from src.DrawingEpisodes import recorderEpisode, recorderEpisode_mr
+from src.DrawingEpisodes import determinePathToConfig
 
 ### The goal of this function is to determine the IP address of the computer running this module.
 ### Knowing the IP address will allow to configure the URLConfig.json for the simulation without human intervention
@@ -61,10 +62,12 @@ class EpisodeManager:
     sim_port= 22
     scenario_file="/home/sload/InitialScene.json"
     oururl_file = "/home/sload/URLConfig.json"
-    destination_scenario="./UnityBuild/smartloader/smartloader_Data/StreamingAssets/InitialScene.json"
-    destination_url="./UnityBuild/smartloader/smartloader_Data/StreamingAssets/URLConfig.json"
- #   run_simulation_cmd="./UnityBuild/smartloader/smartloader.exe"
-    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuild/smartloader/smartloader.exe"
+    destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
+    destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
+#    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d pwd"
+    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/smartloader.exe"
+
+ #   run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/smartloader.exe"
     kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
     simProcess = 0
     myip = get_ip()

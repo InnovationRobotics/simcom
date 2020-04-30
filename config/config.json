@@ -1,11 +1,11 @@
 {
-  "sim_host":"127.0.0.1",
+  "sim_host":"192.168.100.21",
   "sim_port": 22,
   "scenario_file":"InitialScene.json",
   "oururl_file":"URLConfig.json",
-  "sim_root": "./UnityBuilds/smartloader/",
-  "destination_scenario":"./smartloader_Data/StreamingAssets/InitialScene.json",
-  "destination_url":"./smartloader_Data/StreamingAssets/URLConfig.json",
-  "run_simulation_cmd":"./smartloader.x86_64 &",
-  "kill_simulation_cmd":"pkill -f smartloader.x86_64"
+  "sim_root": "./UnityBuilds/smartloader28/",
+  "destination_scenario":"./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json",
+  "destination_url":"./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json",
+  "run_simulation_cmd":"c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/activateme.cmd",
+  "kill_simulation_cmd":"c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 }
