@@ -26,8 +26,7 @@ from paramiko import SSHClient, AuthenticationException, SSHException, BadHostKe
 from scp import SCPClient
 import socket
 import json
-from src.DrawingEpisodes import randomEpisode
-from src.DrawingEpisodes import recorderEpisode, recorderEpisode_mr
+from src.DrawingEpisodes import randomEpisode, MultipleRocksEpisode
 from src.DrawingEpisodes import determinePathToConfig
 
 ### The goal of this function is to determine the IP address of the computer running this module.
@@ -80,17 +79,14 @@ class EpisodeManager:
         randomEpisode(new_seed)
 
 
-    def generateNewScenario(self,typeOfRand):
+    def generateNewScenario(self,typeOfRand, numstones, marker):
         print("generate new scenario")
         if typeOfRand == "verybasic":
             path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
             copyfile(file,"InitialScene.json")
-        elif typeOfRand == "recorder":
-            recorderEpisode(0)
-
-        elif typeOfRand == "recorder_mr":
-            recorderEpisode_mr(0)
+        elif typeOfRand == "MultipleRocks":
+            MultipleRocksEpisode(0, numstones, marker)
         else:
             randomEpisode(typeOfRand, 0)
 
@@ -148,11 +144,11 @@ class EpisodeManager:
          #   self.generateAndRunWholeEpisode("verybasic")
 
 
-    def generateAndRunWholeEpisode(self, typeOfRand):
+    def generateAndRunWholeEpisode(self, typeOfRand="verybasic", numstones="1", marker=False):
         if self.simProcess != 0:
             print("Simulation is already running... wait few minutes and try again")
             return
-        self.generateNewScenario(typeOfRand)
+        self.generateNewScenario(typeOfRand, int(numstones), marker)
         try:
             self.scpScenarioToSimulation()
         except:
@@ -226,17 +222,13 @@ if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
     mp.set_start_method('fork')
-    episode.generateAndRunWholeEpisode("recorder")
-#    sometimerproc = mp.Process(target=episode.killSimulation())
-#    print("I am after calling to kill")
+#    episode.generateAndRunWholeEpisode()
+#    episode.generateAndRunWholeEpisode("verybasic")
+#    episode.generateAndRunWholeEpisode("MultipleRocks", 12)
+    episode.generateAndRunWholeEpisode("other")
 
-#    episode.simProcess = mp.Process(target=episode.runSimulation())
-#    sometimerproc.start()
-    print("I am before start")
-
-#    episode.simProcess.start()
-    print("I am here")
+    print("I am here:"+time.clock().__str__())
     time.sleep(60)
-    print("I am here-here")
+    print("I am here-here:"+time.clock().__str__())
     episode.killSimulation()
-    print("I am here-here-here")
+    print("I am here-here-here:"+time.clock().__str__())
