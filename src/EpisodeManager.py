@@ -59,15 +59,12 @@ class EpisodeManager:
     scenarioConfigFile = open("InitialScene.json", 'wt')
     sim_host="192.168.100.21"
     sim_port= 22
-    scenario_file="/home/sload/InitialScene.json"
-    oururl_file = "/home/sload/URLConfig.json"
-    destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
-    destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
-#    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d pwd"
-    run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/smartloader.exe"
-
- #   run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/smartloader.exe"
-    kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
+    # scenario_file="/home/sload/InitialScene.json"
+    # oururl_file = "/home/sload/URLConfig.json"
+    # destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
+    # destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
+    # run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/smartloader.exe"
+    # kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
     simProcess = 0
     myip = get_ip()
     myurl= ""
@@ -164,48 +161,48 @@ class EpisodeManager:
                 print("Stopped this scenario here")
                 raise #("Banner")
 
+    def FillDefault(self):
+        self.scenario_file="/home/sload/InitialScene.json"
+        self.oururl_file = "/home/sload/URLConfig.json"
+        self.destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
+        self.destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
+        self.run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/activateme.cmd"
+        self.kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
+
     def __init__(self):
         # Where are we
-        mydic = sys.path
-        mypath = ""
-        for i in mydic:
-            if (i.find("simcom")!=-1):
-                mypath = i
-                break
-        if mypath != "":
-            tlocal = mypath
-        else:
-            tlocal = os.getcwd()
 
+        tlocal = determinePathToConfig()
         print(tlocal)
-        local = re.sub('/src$', '', tlocal)
-        configDir = local +"//config"
-        os.chdir(configDir)
-        local = os.getcwd()
-        confFile = configDir+"//config.json"
 
-        if (os.path.exists(confFile)):
-             with open(confFile) as json_file:
-                data = json.load(json_file)
+        if tlocal == None:
+            self.FillDefault()
+        else:
+            conFile = tlocal+"//config.json"
+            if (not os.path.exists(conFile)):
+                self.FillDefault()
+            else:
+                with open(conFile) as json_file:
+                    data = json.load(json_file)
 
-                self.sim_host = data['sim_host']
-                if (self.sim_host == "127.0.0.1"):
-                    self.local = True
-                else:
-                    self.local = False
-                self.sim_port = data['sim_port']
-                self.scenario_file = configDir+"//"+data['scenario_file']
-                self.oururl_file = configDir+"//"+data['oururl_file']
-                self.sim_root = os.getenv('HOME') + '//' + data['sim_root']
-                if self.local == True:
-                    self.destination_scenario = self.sim_root + "//" + data['destination_scenario']
-                    self.destination_url = self.sim_root + "//" +data['destination_url']
-                    self.run_simulation_cmd = self.sim_root + "//" + data['run_simulation_cmd']
-                else:
-                    self.destination_scenario = data['destination_scenario']
-                    self.destination_url = data['destination_url']
-                    self.run_simulation_cmd=data['run_simulation_cmd']
-                self.kill_simulation_cmd = data['kill_simulation_cmd']
+                    self.sim_host = data['sim_host']
+                    if (self.sim_host == "127.0.0.1"):
+                        self.local = True
+                    else:
+                        self.local = False
+                    self.sim_port = data['sim_port']
+                    self.scenario_file = tlocal+"//"+data['scenario_file']
+                    self.oururl_file = tlocal+"//"+data['oururl_file']
+                    self.sim_root = os.getenv('HOME') + '//' + data['sim_root']
+                    if self.local == True:
+                        self.destination_scenario = self.sim_root + "//" + data['destination_scenario']
+                        self.destination_url = self.sim_root + "//" +data['destination_url']
+                        self.run_simulation_cmd = self.sim_root + "//" + data['run_simulation_cmd']
+                    else:
+                        self.destination_scenario = data['destination_scenario']
+                        self.destination_url = data['destination_url']
+                        self.run_simulation_cmd=data['run_simulation_cmd']
+                    self.kill_simulation_cmd = data['kill_simulation_cmd']
         #else: works with default
             #
         # Get the IP address of this machine and throw it in the URLConfig.json file

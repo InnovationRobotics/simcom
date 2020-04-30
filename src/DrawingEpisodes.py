@@ -26,10 +26,13 @@ def find(name, path):
     for root, dirs, files in os.walk(path):
         if name in files or name in dirs:
             return os.path.join(root, name)
+    return None
 
 def determinePathToConfig():
     user=os.getenv("HOME")
     simcomloc = find("simcom", user)
+    if simcomloc == None:
+        return None
     confpath = simcomloc+"/config"
     return confpath
 
