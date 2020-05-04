@@ -26,7 +26,7 @@ from paramiko import SSHClient, AuthenticationException, SSHException, BadHostKe
 from scp import SCPClient
 import socket
 import json
-from src.DrawingEpisodes import randomEpisode, MultipleRocksEpisode
+from src.DrawingEpisodes import randomEpisode, MultipleRocksEpisode, loaderEpisode
 from src.DrawingEpisodes import determinePathToConfig
 
 ### The goal of this function is to determine the IP address of the computer running this module.
@@ -42,6 +42,8 @@ def get_ip():
     finally:
         s.close()
     return IP
+
+
 
 #  The class EpisodeManager deals with everything that has to do with an episode for training an agent with RL.
 #  It is compliant with gym methodology.
@@ -59,12 +61,6 @@ class EpisodeManager:
     scenarioConfigFile = open("InitialScene.json", 'wt')
     sim_host="192.168.100.21"
     sim_port= 22
-    # scenario_file="/home/sload/InitialScene.json"
-    # oururl_file = "/home/sload/URLConfig.json"
-    # destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
-    # destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
-    # run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/smartloader.exe"
-    # kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
     simProcess = 0
     myip = get_ip()
     myurl= ""
@@ -78,12 +74,18 @@ class EpisodeManager:
 
     def generateNewScenario(self,typeOfRand, numstones, marker):
         print("generate new scenario")
+        path = determinePathToConfig()
+
         if typeOfRand == "verybasic":
-            path = os.getcwd()
             file = path +"/VeryBasicInitialScene.json"
             copyfile(file,"InitialScene.json")
         elif typeOfRand == "MultipleRocks":
             MultipleRocksEpisode(0, numstones, marker)
+        elif typeOfRand == "AlgxVeryBasic":
+            file = path + "/AlgxInitialScene.json"
+            copyfile(file,"InitialScene.json")
+        elif typeOfRand == "AlgxBasic":
+            loaderEpisode(0)
         else:
             randomEpisode(typeOfRand, 0)
 
@@ -164,9 +166,9 @@ class EpisodeManager:
     def FillDefault(self):
         self.scenario_file="/home/sload/InitialScene.json"
         self.oururl_file = "/home/sload/URLConfig.json"
-        self.destination_scenario="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/InitialScene.json"
-        self.destination_url="./UnityBuilds/smartloader28/smartloader_Data/StreamingAssets/URLConfig.json"
-        self.run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartloader28/activateme.cmd"
+        self.destination_scenario="./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/InitialScene.json"
+        self.destination_url="./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/URLConfig.json"
+        self.run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/sl_0405/activateme.cmd"
         self.kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 
     def __init__(self):
@@ -211,6 +213,7 @@ class EpisodeManager:
         print(self.myurl)
         data2 = {}
         data2['URL'] = self.myurl
+        data2['ConnectToRos'] = "true"
         #data['URL'].append(self.myurl)
         with open(self.oururl_file, 'w') as outfile:
             json.dump(data2, outfile)
@@ -220,9 +223,9 @@ if __name__ == '__main__':
     #episode.ScpScenarioToSimulation()
     mp.set_start_method('fork')
 #    episode.generateAndRunWholeEpisode()
-#    episode.generateAndRunWholeEpisode("verybasic")
+    episode.generateAndRunWholeEpisode("AlgxVeryBasic")
 #    episode.generateAndRunWholeEpisode("MultipleRocks", 12)
-    episode.generateAndRunWholeEpisode("other")
+#    episode.generateAndRunWholeEpisode("other")
 
     print("I am here:"+time.clock().__str__())
     time.sleep(60)

@@ -252,8 +252,63 @@ class MultipleRocksEpisode:
         with open(filepath,'w') as outfile:
             json.dump(data, outfile)
 
+class loaderEpisode:
+    ######
+    # This class is a template in case we want to draw the position of the loader
+    # It creates a suitable InitialScene.json file but it was never checked on the UnityBuild so the
+    # drawn numbers might be out of boundaries
+    ##############################
+    actual_seed=0
+
+    def __init__(self, newseed):
+        data = {}
+        data['Objects'] = []
+        VehiclePosition = PoseStamped()
+        if newseed != 0:
+            actual_seed = random.seed(None,2)
+
+        VehiclePosition.pose.position.x = random.uniform(0,500)
+        VehiclePosition.pose.position.y = 0
+        VehiclePosition.pose.position.z = random.uniform(0,500)
+        euler_orient = Vector3()
+        euler_orient.x = 0
+        euler_orient.y = random.uniform(-pi,pi)
+        euler_orient.z = 0 #random.uniform(-pi,pi)
+        quat_orient = toRW.euler_to_quaternion(euler_orient.x, euler_orient.y, euler_orient.z)
+        VehiclePosition.pose.orientation.x = quat_orient[0] #random.uniform(-1,1)
+        VehiclePosition.pose.orientation.y = quat_orient[1] #random.uniform(-1,1)
+        VehiclePosition.pose.orientation.z = quat_orient[2] #random.uniform(-1,1)
+        VehiclePosition.pose.orientation.w = quat_orient[3] #random.uniform(-1,1)
+        data['Objects'].append({
+            'Name': 'wheel_loader_DL300',
+            'Id': 'wheel_loader_DL300',
+            'Position':
+                {
+                    'x': VehiclePosition.pose.position.x,
+                    'y': VehiclePosition.pose.position.y,
+                    'z': VehiclePosition.pose.position.z
+                },
+            'Rotation':
+                {
+                    'x': VehiclePosition.pose.orientation.x,
+                    'y': VehiclePosition.pose.orientation.y,
+                    'z': VehiclePosition.pose.orientation.z,
+                    'w': VehiclePosition.pose.orientation.w
+                },
+            'Scale':
+                {
+                'x': 1,
+                'y': 1,
+                'z': 1
+                 }
+        })
+
+        filepath = determinePathToConfig()+"/InitialScene.json"
+        with open(filepath, 'w') as outfile:
+            json.dump(data, outfile)
+
 if __name__ == '__main__':
     for j in range(3):
-        scenario = recorderEpisode(j)
+        scenario = loaderEpisode(0)
 
 
