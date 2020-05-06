@@ -108,6 +108,7 @@ class EpisodeManager:
  #       self.ssh_scp_files(self.this_host,"gameuser","PlayMe1", self.this_port, "/home/sload/InitialScene.json", "AAAAA.json")
         self.ssh_scp_file(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.scenario_file, self.destination_scenario)
         self.ssh_scp_file(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.oururl_file, self.destination_url)
+        self.ssh_scp_file(self.sim_host,"gameuser","PlayMe1", self.sim_port, self.velodyne_file, self.destination_velo)
 
     def runSimulation(self):
         print("Run Simulation Brutal Force")
@@ -168,6 +169,7 @@ class EpisodeManager:
         self.oururl_file = "/home/sload/URLConfig.json"
         self.destination_scenario="./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/InitialScene.json"
         self.destination_url="./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/URLConfig.json"
+        self.destination_velo="./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/Velodyne.json"
         self.run_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/sl_0405/activateme.cmd"
         self.kill_simulation_cmd="c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 
@@ -195,14 +197,18 @@ class EpisodeManager:
                     self.sim_port = data['sim_port']
                     self.scenario_file = tlocal+"//"+data['scenario_file']
                     self.oururl_file = tlocal+"//"+data['oururl_file']
+                    self.velodyne_file = tlocal+"//Velodyne.json"
+
                     self.sim_root = os.getenv('HOME') + '//' + data['sim_root']
                     if self.local == True:
                         self.destination_scenario = self.sim_root + "//" + data['destination_scenario']
                         self.destination_url = self.sim_root + "//" +data['destination_url']
+                        self.destination_velo = self.sim_root + "//" + data['destination_velo']
                         self.run_simulation_cmd = self.sim_root + "//" + data['run_simulation_cmd']
                     else:
                         self.destination_scenario = data['destination_scenario']
                         self.destination_url = data['destination_url']
+                        self.destination_velo = data['destination_velo']
                         self.run_simulation_cmd=data['run_simulation_cmd']
                     self.kill_simulation_cmd = data['kill_simulation_cmd']
         #else: works with default
@@ -216,7 +222,14 @@ class EpisodeManager:
         data2['ConnectToRos'] = "true"
         #data['URL'].append(self.myurl)
         with open(self.oururl_file, 'w') as outfile:
-            json.dump(data2, outfile)
+            json.dump(data2, outfile, indent=4)
+
+        with open(self.velodyne_file) as json_file:
+            velodata = json.load(json_file)
+        velodata["Ip"]=self.myip.__str__()
+
+        with open(self.velodyne_file, 'w') as outvelo:
+            json.dump(velodata, outvelo, indent=4)
 
 if __name__ == '__main__':
     episode = EpisodeManager()

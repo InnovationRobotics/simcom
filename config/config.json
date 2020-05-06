@@ -3,9 +3,10 @@
   "sim_port": 22,
   "scenario_file":"InitialScene.json",
   "oururl_file":"URLConfig.json",
-  "sim_root": "./UnityBuilds/sl_0405/",
-  "destination_scenario":"./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/InitialScene.json",
-  "destination_url":"./UnityBuilds/sl_0405/smartloader_Data/StreamingAssets/URLConfig.json",
-  "run_simulation_cmd":"c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/sl_0405/activateme.cmd",
+  "sim_root": "./UnityBuilds/smartload/",
+  "destination_scenario":"./UnityBuilds/smartload/smartloader_Data/StreamingAssets/InitialScene.json",
+  "destination_url":"./UnityBuilds/smartload/smartloader_Data/StreamingAssets/URLConfig.json",
+  "destination_velo":"./UnityBuilds/smartload/smartloader_Data/StreamingAssets/Velodyne.json",
+  "run_simulation_cmd":"c:/Pstools/psexec /accepteula -i 1 -d c:/users/gameuser/UnityBuilds/smartload/activateme.cmd",
   "kill_simulation_cmd":"c:/Pstools/psexec /accepteula -i 1 -d taskkill /F /IM smartloader.exe"
 }

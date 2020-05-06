@@ -6,6 +6,7 @@
   "sim_root": "./UnityBuilds/smartloader/",
   "destination_scenario":"./smartloader_Data/StreamingAssets/InitialScene.json",
   "destination_url":"./smartloader_Data/StreamingAssets/URLConfig.json",
+  "destination_velo":"./smartloader_Data/StreamingAssets/Velodyne.json",
   "run_simulation_cmd":"./smartloader.x86_64 &",
   "kill_simulation_cmd":"pkill -f smartloader.x86_64"
 }

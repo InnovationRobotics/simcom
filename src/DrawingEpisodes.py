@@ -130,7 +130,7 @@ class randomEpisode:
  #       deleteFileIfExists('/home/sload/ws/interfaces/src/simcom/config/InitialScene.json')
         filepath = determinePathToConfig()+"/InitialScene.json"
         with open(filepath, 'w') as outfile:
-            json.dump(data, outfile)
+            json.dump(data, outfile, indent=4)
 
 class MultipleRocksEpisode:
     # actual_seed=0
@@ -250,7 +250,7 @@ class MultipleRocksEpisode:
 
         filepath = determinePathToConfig()+"/InitialScene.json"
         with open(filepath,'w') as outfile:
-            json.dump(data, outfile)
+            json.dump(data, outfile, indent=4)
 
 class loaderEpisode:
     ######
@@ -305,7 +305,7 @@ class loaderEpisode:
 
         filepath = determinePathToConfig()+"/InitialScene.json"
         with open(filepath, 'w') as outfile:
-            json.dump(data, outfile)
+            json.dump(data, outfile, indent=4)
 
 if __name__ == '__main__':
     for j in range(3):
