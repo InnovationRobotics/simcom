@@ -83,7 +83,7 @@ class EpisodeManager:
             MultipleRocksEpisode(0, numstones, marker)
         elif typeOfRand == "AlgxVeryBasic":
             file = path + "/AlgxInitialScene.json"
-            copyfile(file,"InitialScene.json")
+            copyfile(file, path+"/InitialScene.json")
         elif typeOfRand == "AlgxBasic":
             loaderEpisode(0)
         else:
