@@ -78,7 +78,7 @@ class EpisodeManager:
 
         if typeOfRand == "verybasic":
             file = path +"/VeryBasicInitialScene.json"
-            copyfile(file,"InitialScene.json")
+            copyfile(file, path+"/InitialScene.json")
         elif typeOfRand == "MultipleRocks":
             MultipleRocksEpisode(0, numstones, marker)
         elif typeOfRand == "AlgxVeryBasic":
@@ -235,8 +235,8 @@ if __name__ == '__main__':
     episode = EpisodeManager()
     #episode.ScpScenarioToSimulation()
     mp.set_start_method('fork')
-#    episode.generateAndRunWholeEpisode()
-    episode.generateAndRunWholeEpisode("AlgxVeryBasic")
+    episode.generateAndRunWholeEpisode()
+#    episode.generateAndRunWholeEpisode("AlgxVeryBasic")
 #    episode.generateAndRunWholeEpisode("MultipleRocks", 12)
 #    episode.generateAndRunWholeEpisode("other")
 
